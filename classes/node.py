@@ -32,6 +32,7 @@ class Node:
     def get_node_list(self):
         return self.nodeList
 
+    # Iterate through all the nodes of the graph and add the ones in the node's range to its nodeList
     def update_node_list(self, allNodes):
 
         self.nodeList = [] # Clear node list
@@ -54,6 +55,15 @@ class Node:
     def is_in_range(self, nextNode):
         return self.distance_between_2_points(self.position, nextNode.position) <= self.listenRange
 
+    def calculate_propagation_time(self, point1, point2):
+        distance = self.distance_between_2_points(point1, point2)
+        bandwidth = 1
+        transmissionPower = 100
+        alpha = 2
+        noise = 5
+
+        return bandwidth * math.log(1 + (transmissionPower / (math.pow(distance, 2) * noise)))
+
     # Trickle methods
     def start_listen(self):
         # Listen period
@@ -65,19 +75,29 @@ class Node:
         self.isListening = False
         return
 
-    def update_state(self, state):
+    def update_state(self, state, time):
         # If this is a new state, update to the new state and transmit to other nodes
         if self.state != state:
+            # Logical update
             self.state = state
+            self.arrivalPacket.append(state)
+            self.arrivalTime.append(time)
+
+            # Graphical update
             circle = Circle(Point(self.position['x'], self.position['y']),self.graph.radius)
             circle.setFill('green')
             circle.draw(self.graph.window)
             sleep(1)
+
             self.transmit_state_to_neighbors()
         else: return
 
     def transmit_state_to_neighbors(self):
         for node in self.nodeList:
+
+            # Calculate time for the next neighbor to update
+            time = self.calculate_propagation_time(self.position, node.position)
+
             self.graph.draw_line(self, node)
-            node.update_state(self.state)
+            node.update_state(self.state, time)
         return

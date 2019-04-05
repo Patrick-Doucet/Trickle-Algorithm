@@ -35,7 +35,8 @@ for node in g.nodeList:
 
 g.plot()
 
-nD.update_state(1)
+nD.update_state(1, 1)
 
 for node in g.nodeList:
     print('I AM ' + node.nid + ' AND MY STATE IS: ' + str(node.state))
+    print('ARRIVAL TIME OF: ' + str(node.arrivalPacket) + ' IS ' + str(node.arrivalTime))
