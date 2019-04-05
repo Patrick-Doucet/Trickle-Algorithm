@@ -1,13 +1,16 @@
 import math
+from .graphics import *
+from time import sleep
 
 class Node:
 
-    def __init__(self, nid, position, listenRange):
+    def __init__(self, source, nid, position, listenRange):
 
         # User defined parameters
         self.nid = nid # node id
         self.position = position
         self.listenRange = listenRange
+        self.graph = source
 
         # Default init parameters
         self.nodeList = []
@@ -58,4 +61,11 @@ class Node:
         return
 
     def transmit(self, nodeList):
+        for thing in nodeList:
+            circle = Circle(Point(thing.position['x'], thing.position['y']),self.graph.radius)
+            circle.draw(self.graph.window)
+            circle.setFill('green')
+            self.graph.draw_line(self, thing)
+            sleep(1)
+
         return
