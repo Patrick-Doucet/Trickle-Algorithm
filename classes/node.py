@@ -63,23 +63,21 @@ class Node:
     def stop_listen(self):
         # Stop listening
         self.isListening = False
-        return    
+        return
 
     def update_state(self, state):
-        
         # If this is a new state, update to the new state and transmit to other nodes
         if self.state != state:
             self.state = state
+            circle = Circle(Point(self.position['x'], self.position['y']),self.graph.radius)
+            circle.setFill('green')
+            circle.draw(self.graph.window)
+            sleep(1)
             self.transmit_state_to_neighbors()
         else: return
 
     def transmit_state_to_neighbors(self):
         for node in self.nodeList:
+            self.graph.draw_line(self, node)
             node.update_state(self.state)
-        for thing in self.nodeList:
-            circle = Circle(Point(thing.position['x'], thing.position['y']),self.graph.radius)
-            circle.draw(self.graph.window)
-            circle.setFill('green')
-            self.graph.draw_line(self, thing)
-            sleep(1)
         return
