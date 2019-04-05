@@ -1,5 +1,6 @@
 from .graphics import *
 import math
+import numpy as np
 
 class Graph:
 
@@ -8,8 +9,8 @@ class Graph:
         # Default init parameters
         self.nodeList = []
         self.window = GraphWin(width = 1000, height = 1000) # create a window
-        self.window.setCoords(-5, -5, 15, 15) # set the coordinates of the window; bottom left is (0, 0) and top right is (10, 10)
-        self.radius = 0.2
+        self.window.setCoords(-5, -5, 105, 105) # set the coordinates of the window; bottom left is (0, 0) and top right is (10, 10)
+        self.radius = 2
 
 
     # Add new node to network graph
@@ -30,8 +31,16 @@ class Graph:
 
 
     def plot(self):
+        min_x = np.min(list(map(lambda x : x.position['x'], self.nodeList))) - 5
+        max_x = np.max(list(map(lambda x : x.position['x'], self.nodeList))) + 5
+        min_y = np.min(list(map(lambda x : x.position['y'], self.nodeList))) - 5
+        max_y = np.max(list(map(lambda x : x.position['y'], self.nodeList))) + 5
 
+        range = max(max_x-min_x,max_y-min_y)
+        self.radius = range/80
 
+        self.window = GraphWin(width = 1000, height = 1000)
+        self.window.setCoords(min_x, min_y, min_x+range, min_y+range)
 
         for node in self.nodeList:
             circle = Circle(Point(node.position['x'], node.position['y']),self.radius)
@@ -40,9 +49,8 @@ class Graph:
             circle = Circle(Point(node.position['x'],node.position['y']), node.listenRange)
             circle.setOutline('silver')
             circle.draw(self.window)
-            text = Text(Point(node.position['x'] + 0*self.radius, node.position['y']+ 0*self.radius), node.nid)
-            text.draw(self.window)
             for adj_node in node.get_node_list():
                 self.draw_line(node, adj_node, 'silver')
-
+            text = Text(Point(node.position['x'] + 0*self.radius, node.position['y']+ 0*self.radius), node.nid)
+            text.draw(self.window)
         self.window.getMouse() # pause before closing
