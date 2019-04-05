@@ -25,4 +25,9 @@ for node in g.nodeList:
         outputstring += ' ' + adj_node.nid + ' '
     print('I AM ' + node.nid + ' AND I CAN REACH: [' + outputstring + ']')
 
+nD.update_state(1)
+
+for node in g.nodeList:
+    print('I AM ' + node.nid + ' AND MY STATE IS: ' + str(node.state))
+
 g.plot()

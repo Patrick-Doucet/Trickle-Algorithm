@@ -15,6 +15,7 @@ class Node:
         self.arrivalTime = []
         self.arrivalSize = []
         self.state = -1
+        self.isListening = True # FOR NOW IT WILL ALWAYS LISTEN
 
         # Trickle parameters
         self.Imin = -1 # Minimum length of interval
@@ -51,11 +52,24 @@ class Node:
         return self.distance_between_2_points(self.position, nextNode.position) <= self.listenRange
 
     # Trickle methods
-    def listen(self):
+    def start_listen(self):
+        # Listen period
+        self.isListening = True
         return
 
-    def update(self, state):
-        return
+    def stop_listen(self):
+        # Stop listening
+        self.isListening = False
+        return    
 
-    def transmit(self, nodeList):
-        return
+    def update_state(self, state):
+        
+        # If this is a new state, update to the new state and transmit to other nodes
+        if self.state != state:
+            self.state = state
+            self.transmit_state_to_neighbors()
+        else: return
+
+    def transmit_state_to_neighbors(self):
+        for node in self.nodeList:
+            node.update_state(self.state)
