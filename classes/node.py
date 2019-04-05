@@ -1,13 +1,16 @@
 import math
+from .graphics import *
+from time import sleep
 
 class Node:
 
-    def __init__(self, nid, position, listenRange):
+    def __init__(self, source, nid, position, listenRange):
 
         # User defined parameters
         self.nid = nid # node id
         self.position = position
         self.listenRange = listenRange
+        self.graph = source
 
         # Default init parameters
         self.nodeList = []
@@ -73,3 +76,10 @@ class Node:
     def transmit_state_to_neighbors(self):
         for node in self.nodeList:
             node.update_state(self.state)
+        for thing in self.nodeList:
+            circle = Circle(Point(thing.position['x'], thing.position['y']),self.graph.radius)
+            circle.draw(self.graph.window)
+            circle.setFill('green')
+            self.graph.draw_line(self, thing)
+            sleep(1)
+        return
