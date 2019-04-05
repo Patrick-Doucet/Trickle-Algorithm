@@ -1,16 +1,37 @@
 import classes.node as node
 import classes.graph as graph
 
+# Initting test graph
 g = graph.Graph()
-n1 = node.Node({'x': 0, 'y': 3}, 2)
-n2 = node.Node({'x': 1, 'y': 4}, 1)
+nA = node.Node('A', {'x': 0, 'y': 3}, 2)
+nB = node.Node('B', {'x': 1, 'y': 4}, 1)
+nC = node.Node('C', {'x': 2, 'y': 5}, 3)
 
-print(n1.distance_between_2_points({'x': 0, 'y': 3}, {'x': 1, 'y': 4}))
-print(n1.is_in_range({'x': 0, 'y': 3}, {'x': 1, 'y': 4}))
-print(n2.is_in_range({'x': 0, 'y': 3}, {'x': 1, 'y': 4}))
-print(g.nodeList)
+# Debugging
+print('A SHOULD SEE B? ' + str(nA.is_in_range(nB)))
+print('A SHOULD SEE C? ' + str(nA.is_in_range(nC)))
+print('B SHOULD SEE A? ' + str(nB.is_in_range(nA)))
+print('B SHOULD SEE C? ' + str(nB.is_in_range(nC)))
+print('C SHOULD SEE A? ' + str(nC.is_in_range(nA)))
+print('C SHOULD SEE B? ' + str(nC.is_in_range(nB)))
 
-g.add_node(n1)
-g.add_node(n2)
-for node in g.nodeList:
-    print(node.position)
+# Adding nodes to graph
+g.add_node(nA)
+g.add_node(nB)
+g.add_node(nC)
+
+# Debugging
+outputstring1 = ''
+for node in nA.get_node_list():
+    outputstring1 += ' ' + node.nid + ' '
+print('I AM A AND I CAN REACH: [' + outputstring1 + ']')
+
+outputstring1 = ''
+for node in nB.get_node_list():
+        outputstring1 += ' ' + node.nid + ' '
+print('I AM B AND I CAN REACH: [' + outputstring1 + ']')
+
+outputstring1 = ''
+for node in nC.get_node_list():
+        outputstring1 += ' ' + node.nid + ' '
+print('I AM C AND I CAN REACH: [' + outputstring1 + ']')

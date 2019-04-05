@@ -2,9 +2,10 @@ import math
 
 class Node:
 
-    def __init__(self, position, listenRange):
+    def __init__(self, nid, position, listenRange):
         
         # User defined parameters
+        self.nid = nid # node id
         self.position = position
         self.listenRange = listenRange
 
@@ -25,16 +26,29 @@ class Node:
 
     # Simulation methods
     def get_node_list(self):
-        return nodeList
+        return self.nodeList
     
-    def update_node_list(self):
+    def update_node_list(self, allNodes):
+
+        self.nodeList = [] # Clear node list
+
+        # Repopulate node list
+        for node in allNodes:
+
+            # If the node is different than self and its position is in range, add it to self.nodeList
+            if node.nid != self.nid:
+                if(self.is_in_range(node)):
+                    self.nodeList.append(node)
+
         return
 
+    # Return distance between 2 points
     def distance_between_2_points(self, point1, point2):
         return math.sqrt(math.pow(point2['x'] - point1['x'], 2) + math.pow(point2['y'] - point1['y'], 2))
 
-    def is_in_range(self, point1, point2):
-        return self.distance_between_2_points(point1, point2) < self.listenRange
+    # Returns True or False, checking if the given node is in the range of this node
+    def is_in_range(self, nextNode):
+        return self.distance_between_2_points(self.position, nextNode.position) <= self.listenRange
 
     # Trickle methods
     def listen(self):
