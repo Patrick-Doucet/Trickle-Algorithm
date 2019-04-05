@@ -8,9 +8,6 @@ class Graph:
 
         # Default init parameters
         self.nodeList = []
-        self.window = GraphWin(width = 1000, height = 1000) # create a window
-        self.window.setCoords(-5, -5, 105, 105) # set the coordinates of the window; bottom left is (0, 0) and top right is (10, 10)
-        self.radius = 2
 
 
     # Add new node to network graph
