@@ -3,7 +3,7 @@ import math
 class Node:
 
     def __init__(self, nid, position, listenRange):
-        
+
         # User defined parameters
         self.nid = nid # node id
         self.position = position
@@ -27,7 +27,7 @@ class Node:
     # Simulation methods
     def get_node_list(self):
         return self.nodeList
-    
+
     def update_node_list(self, allNodes):
 
         self.nodeList = [] # Clear node list
@@ -59,4 +59,3 @@ class Node:
 
     def transmit(self, nodeList):
         return
-    

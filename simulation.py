@@ -4,34 +4,25 @@ import classes.graph as graph
 # Initting test graph
 g = graph.Graph()
 nA = node.Node('A', {'x': 0, 'y': 3}, 2)
-nB = node.Node('B', {'x': 1, 'y': 4}, 1)
+nB = node.Node('B', {'x': 1, 'y': 6}, 1)
 nC = node.Node('C', {'x': 2, 'y': 5}, 3)
-
-# Debugging
-print('A SHOULD SEE B? ' + str(nA.is_in_range(nB)))
-print('A SHOULD SEE C? ' + str(nA.is_in_range(nC)))
-print('B SHOULD SEE A? ' + str(nB.is_in_range(nA)))
-print('B SHOULD SEE C? ' + str(nB.is_in_range(nC)))
-print('C SHOULD SEE A? ' + str(nC.is_in_range(nA)))
-print('C SHOULD SEE B? ' + str(nC.is_in_range(nB)))
+nD = node.Node('D', {'x': 5, 'y': 10}, 4)
+nE = node.Node('E', {'x': 0, 'y': 0}, 3)
+nF = node.Node('F', {'x': 3, 'y': 8}, 3)
 
 # Adding nodes to graph
 g.add_node(nA)
 g.add_node(nB)
 g.add_node(nC)
+g.add_node(nD)
+g.add_node(nE)
+g.add_node(nF)
 
 # Debugging
-outputstring1 = ''
-for node in nA.get_node_list():
-    outputstring1 += ' ' + node.nid + ' '
-print('I AM A AND I CAN REACH: [' + outputstring1 + ']')
+for node in g.nodeList:
+    outputstring = ''
+    for adj_node in node.get_node_list():
+        outputstring += ' ' + adj_node.nid + ' '
+    print('I AM ' + node.nid + ' AND I CAN REACH: [' + outputstring + ']')
 
-outputstring1 = ''
-for node in nB.get_node_list():
-        outputstring1 += ' ' + node.nid + ' '
-print('I AM B AND I CAN REACH: [' + outputstring1 + ']')
-
-outputstring1 = ''
-for node in nC.get_node_list():
-        outputstring1 += ' ' + node.nid + ' '
-print('I AM C AND I CAN REACH: [' + outputstring1 + ']')
+g.plot()
