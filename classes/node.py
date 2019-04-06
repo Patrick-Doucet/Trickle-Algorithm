@@ -89,8 +89,10 @@ class Node:
 
             # Graphical update
             circle = Circle(Point(self.position['x'], self.position['y']),self.graph.radius)
-            circle.setFill('green')
+            circle.setFill('medium sea green')
             circle.draw(self.graph.window)
+            text = Text(Point(self.position['x'] + 0*self.graph.radius, self.position['y']+ 0*self.graph.radius), self.nid)
+            text.draw(self.graph.window)
             sleep(1)
 
             self.transmit_state_to_neighbors(time)
