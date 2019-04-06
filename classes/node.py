@@ -28,7 +28,10 @@ class Node:
         self.t = -1 # Random time t inside [I/2, I]
         self.c = -1 # Consistant message counter
 
-    # Simulation methods
+    ##########################################################
+    #                    Simulation methods                  #
+    ##########################################################
+
     def get_node_list(self):
         return self.nodeList
 
@@ -46,6 +49,28 @@ class Node:
                     self.nodeList.append(node)
 
         return
+
+    # Check if at a certain time, the node had received an update
+    def has_node_updated_at_time(self, time):
+
+        updateList = []
+
+        if len(self.arrivalInfo) == 0:
+            return updateList
+
+        def sortFun(x):
+            return x['time']
+
+        self.arrivalInfo.sort(key=sortFun)
+
+        timestamp = self.arrivalInfo[0]['time'] #for now
+        stateAtTimestamp = self.arrivalInfo[0]['state']
+        nodeF = self.arrivalInfo[0]['node']
+        if time == timestamp:
+            updateList.append({ 'timestamp': timestamp, 'state': stateAtTimestamp, 'node' : nodeF})
+
+        return updateList
+
 
     # Return distance between 2 points
     def distance_between_2_points(self, point1, point2):
@@ -68,7 +93,16 @@ class Node:
         normalizedPropagationTime = math.ceil(propagationTime)
         return normalizedPropagationTime
 
-    # Trickle methods
+
+    ##########################################################
+    #                    Trickle methods                     #
+    ##########################################################
+
+    def configure_trickle_parameters(self, Imin, Imax, k):
+        self.Imin = Imin # Minimum length of interval
+        self.Imax = Imax # Minimum length of interval
+        self.k = k # Redundancy k
+
     def start_listen(self):
         # Listen period
         self.isListening = True
@@ -100,24 +134,3 @@ class Node:
             time += previousTime
             node.update_state(self, self.state, time)
         return
-
-    def has_node_updated_at_time(self, time):
-
-        updateList = []
-        #for timestamp, stateAtTimestamp in zip(self.arrivalTime, self.arrivalPacket):
-
-        if len(self.arrivalInfo) == 0:
-            return updateList
-
-        def sortFun(x):
-            return x['time']
-
-        self.arrivalInfo.sort(key=sortFun)
-
-        timestamp = self.arrivalInfo[0]['time'] #for now
-        stateAtTimestamp = self.arrivalInfo[0]['state']
-        nodeF = self.arrivalInfo[0]['node']
-        if time == timestamp:
-            updateList.append({ 'timestamp': timestamp, 'state': stateAtTimestamp, 'node' : nodeF})
-
-        return updateList
