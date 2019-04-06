@@ -432,6 +432,8 @@ class Transform:
 DEFAULT_CONFIG = {"fill":"",
       "outline":"black",
       "width":"1",
+      "start":"0",
+      "extent":"90",
       "arrow":"none",
       "text":"",
       "justify":"center",
@@ -470,6 +472,14 @@ class GraphicsObject:
     def setWidth(self, width):
         """Set line weight to width"""
         self._reconfig("width", width)
+
+    def setStart(self, start):
+        """Set arc start angle to start"""
+        self._reconfig("start", start)
+
+    def setExtent(self, extent):
+        """Set arc span angle to extent"""
+        self._reconfig("extent", extent)
 
     def draw(self, graphwin):
 
@@ -577,7 +587,7 @@ class _BBox(GraphicsObject):
     # Internal base class for objects represented by bounding box
     # (opposite corners) Line segment is a degenerate case.
 
-    def __init__(self, p1, p2, options=["outline","width","fill"]):
+    def __init__(self, p1, p2, options=["outline","width","fill","start","extent"]):
         GraphicsObject.__init__(self, options)
         self.p1 = p1.clone()
         self.p2 = p2.clone()
@@ -627,7 +637,6 @@ class Oval(_BBox):
     def __repr__(self):
         return "Oval({}, {})".format(str(self.p1), str(self.p2))
 
-
     def clone(self):
         other = Oval(self.p1, self.p2)
         other.config = self.config.copy()
@@ -638,7 +647,33 @@ class Oval(_BBox):
         p2 = self.p2
         x1,y1 = canvas.toScreen(p1.x,p1.y)
         x2,y2 = canvas.toScreen(p2.x,p2.y)
-        return canvas.create_oval(x1,y1,x2,y2,options)
+        sub_options = {x:options[x] for x in options.keys() if x!='start' and x!='extent'}
+        return canvas.create_oval(x1,y1,x2,y2,sub_options)
+
+class Arc(_BBox):
+
+    def __init__(self, center, radius):
+        self.p1 = Point(center.x-radius, center.y-radius)
+        self.p2 = Point(center.x+radius, center.y+radius)
+        _BBox.__init__(self, self.p1, self.p2)
+        self.radius = radius
+        self.center = center
+
+    def __repr__(self):
+        return "Arc({}, {})".format(str(self.p1), str(self.p2))
+
+
+    def clone(self):
+        other = Arc(self.center, self.radius)
+        other.config = self.config.copy()
+        return other
+
+    def _draw(self, canvas, options):
+        p1 = self.p1
+        p2 = self.p2
+        x1,y1 = canvas.toScreen(p1.x,p1.y)
+        x2,y2 = canvas.toScreen(p2.x,p2.y)
+        return canvas.create_arc(x1,y1,x2,y2,options)
 
 class Circle(Oval):
 
