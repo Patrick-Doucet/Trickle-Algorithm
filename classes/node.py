@@ -58,11 +58,15 @@ class Node:
     def calculate_propagation_time(self, point1, point2):
         distance = self.distance_between_2_points(point1, point2)
         bandwidth = 1
-        transmissionPower = 100
+        transmissionPower = 1000
         alpha = 2
-        noise = 5
+        noise = 1
 
-        return bandwidth * math.log(1 + (transmissionPower / (math.pow(distance, 2) * noise)))
+        propagationTime = bandwidth * math.log(1 + (transmissionPower / (math.pow(distance, alpha) * noise)))
+
+        # Normalize to integers
+        normalizedPropagationTime = math.ceil(propagationTime)
+        return normalizedPropagationTime
 
     # Trickle methods
     def start_listen(self):
@@ -103,3 +107,12 @@ class Node:
             self.graph.draw_line(self, node)
             node.update_state(self.state, time)
         return
+
+    def has_node_updated_at_time(self, time):
+        
+        updateList = []
+        for timestamp, stateAtTimestamp in zip(self.arrivalTime, self.arrivalPacket):
+            if(time == timestamp):
+                updateList.append({ 'timestamp': timestamp, 'state': stateAtTimestamp})
+
+        return updateList

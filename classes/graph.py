@@ -8,7 +8,25 @@ class Graph:
 
         # Default init parameters
         self.nodeList = []
+        self.simulationStartTime = 0
+        self.simulationEndTime = 20
+        self.simulationCurrentTime = -1
 
+    # Iterate through the simulation time to graphically show all node updates
+    def run_simulation(self):
+
+        if(self.simulationCurrentTime < self.simulationStartTime):
+            self.simulationCurrentTime = self.simulationStartTime
+
+        while self.simulationCurrentTime < self.simulationEndTime:
+
+            updatesToProcess = {}
+            for node in self.nodeList:
+                nodeUpdates = node.has_node_updated_at_time(self.simulationCurrentTime)
+                updatesToProcess[node.nid] = nodeUpdates
+
+            print("AT TIME " + str(self.simulationCurrentTime) + " I RECEIVED THE UPDATES " + str(updatesToProcess))
+            self.simulationCurrentTime += 1
 
     # Add new node to network graph
     # Force all nodes (including the newly added node) to update their nodeList
