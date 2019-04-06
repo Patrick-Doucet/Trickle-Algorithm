@@ -91,14 +91,16 @@ class Node:
             text.draw(self.graph.window)
             sleep(1)
 
-            self.transmit_state_to_neighbors()
+            self.transmit_state_to_neighbors(time)
         else: return
 
-    def transmit_state_to_neighbors(self):
+    def transmit_state_to_neighbors(self, previousTime):
         for node in self.nodeList:
 
             # Calculate time for the next neighbor to update
             time = self.calculate_propagation_time(self.position, node.position)
+            # Because this is precomputed, add the last iterations time to this one
+            time += previousTime
 
             self.graph.draw_line(self, node)
             node.update_state(self.state, time)
