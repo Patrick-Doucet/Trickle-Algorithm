@@ -1,4 +1,5 @@
 import math
+import numpy as np
 from .graphics import *
 from time import sleep
 
@@ -14,11 +15,10 @@ class Node:
 
         # Default init parameters
         self.nodeList = []
-        self.arrivalPacket = []
-        self.arrivalTime = []
-        self.arrivalSize = []
+        self.arrivalInfo = []
         self.state = -1
         self.isListening = True # FOR NOW IT WILL ALWAYS LISTEN
+        self.packetSize = 10.
 
         # Trickle parameters
         self.Imin = -1 # Minimum length of interval
@@ -79,22 +79,14 @@ class Node:
         self.isListening = False
         return
 
-    def update_state(self, state, time):
+    def update_state(self, nodeF, state, time):
         # If this is a new state, update to the new state and transmit to other nodes
+
+        self.arrivalInfo.append({'node':nodeF,'time':time,'state':state})
+
         if self.state != state:
             # Logical update
             self.state = state
-            self.arrivalPacket.append(state)
-            self.arrivalTime.append(time)
-
-            # Graphical update
-            circle = Circle(Point(self.position['x'], self.position['y']),self.graph.radius)
-            circle.setFill('medium sea green')
-            circle.draw(self.graph.window)
-            text = Text(Point(self.position['x'] + 0*self.graph.radius, self.position['y']+ 0*self.graph.radius), self.nid)
-            text.draw(self.graph.window)
-            sleep(1)
-
             self.transmit_state_to_neighbors(time)
         else: return
 
@@ -103,18 +95,29 @@ class Node:
 
             # Calculate time for the next neighbor to update
             time = self.calculate_propagation_time(self.position, node.position)
+            print('TIME ' + self.nid + ' ' + node.nid + ' '+ str(time) + ' ' + str(self.distance_between_2_points(self.position, node.position)))
             # Because this is precomputed, add the last iterations time to this one
             time += previousTime
-
-            self.graph.draw_line(self, node)
-            node.update_state(self.state, time)
+            node.update_state(self, self.state, time)
         return
 
     def has_node_updated_at_time(self, time):
-        
+
         updateList = []
-        for timestamp, stateAtTimestamp in zip(self.arrivalTime, self.arrivalPacket):
-            if(time == timestamp):
-                updateList.append({ 'timestamp': timestamp, 'state': stateAtTimestamp})
+        #for timestamp, stateAtTimestamp in zip(self.arrivalTime, self.arrivalPacket):
+
+        if len(self.arrivalInfo) == 0:
+            return updateList
+
+        def sortFun(x):
+            return x['time']
+
+        self.arrivalInfo.sort(key=sortFun)
+
+        timestamp = self.arrivalInfo[0]['time'] #for now
+        stateAtTimestamp = self.arrivalInfo[0]['state']
+        nodeF = self.arrivalInfo[0]['node']
+        if time == timestamp:
+            updateList.append({ 'timestamp': timestamp, 'state': stateAtTimestamp, 'node' : nodeF})
 
         return updateList

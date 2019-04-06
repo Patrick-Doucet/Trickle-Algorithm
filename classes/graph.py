@@ -1,6 +1,7 @@
 from .graphics import *
 import math
 import numpy as np
+from time import sleep
 
 class Graph:
 
@@ -9,7 +10,7 @@ class Graph:
         # Default init parameters
         self.nodeList = []
         self.simulationStartTime = 0
-        self.simulationEndTime = 20
+        self.simulationEndTime = 501
         self.simulationCurrentTime = -1
 
     # Iterate through the simulation time to graphically show all node updates
@@ -18,15 +19,44 @@ class Graph:
         if(self.simulationCurrentTime < self.simulationStartTime):
             self.simulationCurrentTime = self.simulationStartTime
 
+        max_x = np.max(list(map(lambda x : x.position['x'], self.nodeList))) - self.radius/2
+        max_y = np.max(list(map(lambda x : x.position['y'], self.nodeList))) - self.radius/2
+        max_total = np.max([max_x, max_y])
+
+        timer = Text(Point(max_total, max_total), 'Time : ' + str(self.simulationCurrentTime))
+        timer.draw(self.window)
+
         while self.simulationCurrentTime < self.simulationEndTime:
 
             updatesToProcess = {}
             for node in self.nodeList:
                 nodeUpdates = node.has_node_updated_at_time(self.simulationCurrentTime)
-                updatesToProcess[node.nid] = nodeUpdates
+                updatesToProcess[node.nid] = {'node': node, 'updates' : nodeUpdates}
 
-            print("AT TIME " + str(self.simulationCurrentTime) + " I RECEIVED THE UPDATES " + str(updatesToProcess))
+            for struct in updatesToProcess.values():# Graphical update
+                if struct['updates'] != []:
+                    node = struct['node']
+                    nodeF = struct['updates'][0]['node']
+                    circle = Circle(Point(node.position['x'], node.position['y']),node.graph.radius)
+                    circle.setFill('medium sea green')
+                    circle.draw(node.graph.window)
+                    if node!=nodeF:
+                        self.draw_line(nodeF, node)
+                    text = Text(Point(node.position['x'] + 0*node.graph.radius, node.position['y']+ 0*node.graph.radius), node.nid)
+                    text.draw(node.graph.window)
+                    sleep(1)
+            #if updatesToProcess != []:
+                #print("AT TIME " + str(self.simulationCurrentTime) + " I RECEIVED THE UPDATES " + str(updatesToProcess))
+
+
+            timer.undraw()
+            self.window.update()
+            timer = Text(Point(max_total, max_total), 'Time : ' + str(self.simulationCurrentTime))
+            timer.draw(self.window)
+
             self.simulationCurrentTime += 1
+
+        self.window.getMouse()
 
     # Add new node to network graph
     # Force all nodes (including the newly added node) to update their nodeList
