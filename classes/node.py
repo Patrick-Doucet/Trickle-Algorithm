@@ -57,13 +57,13 @@ class Node:
 
     def calculate_propagation_time(self, point1, point2):
         distance = self.distance_between_2_points(point1, point2)
-        bandwidth = 1
+        bandwidth = 0.1
         transmissionPower = 1000
         alpha = 2
         noise = 1
 
-        propagationTime = bandwidth * math.log(1 + (transmissionPower / (math.pow(distance, alpha) * noise)))
-
+        transmissionRate = bandwidth * math.log(1 + (transmissionPower / (math.pow(distance, alpha) * noise)))
+        propagationTime = self.packetSize/transmissionRate
         # Normalize to integers
         normalizedPropagationTime = math.ceil(propagationTime)
         return normalizedPropagationTime
