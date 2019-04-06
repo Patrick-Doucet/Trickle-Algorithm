@@ -20,6 +20,9 @@ class Node:
         self.state = -1
         self.isListening = True # FOR NOW IT WILL ALWAYS LISTEN
         self.packetSize = 10.
+        self.simCycleTime = 0 # offset for simulation time, self.t is bound by [I/2, I], but the simulation time always increases
+        self.hasToTransmit = False
+        self.earliestTimeToTransmit = -1
 
         # Trickle parameters
         self.Imin = -1 # Minimum length of interval
@@ -51,7 +54,7 @@ class Node:
 
         return
 
-    # Check if at a certain time, the node had received an update
+    # Check if when we are at time t, the node has an update to transmit
     def has_node_updated_at_time(self, time):
 
         updateList = []
@@ -72,6 +75,24 @@ class Node:
 
         return updateList
 
+    # Trickle step 4
+    def does_node_need_to_transmit(self, time):
+
+        if self.hasToTransmit == False: return
+
+        if self.earliestTimeToTransmit > time: return # The node cannot transmit until it has received the update first
+
+        # if the time is not t, do not transmit
+        if time != (self.t + self.simCycleTime): return
+        print(str(time) + ' = ' + str(self.t) + ' + ' + str(self.simCycleTime))
+        # if c is not lesser than k, do not transmit    
+        if self.c >= self.k: return
+
+        # if the node transmit he won't need to transmit again until he receives another update
+        self.hasToTransmit = False
+
+        # Else transmit
+        self.transmit_state_to_neighbors(time)
 
     # Return distance between 2 points
     def distance_between_2_points(self, point1, point2):
@@ -146,7 +167,7 @@ class Node:
         """
 
         # TODO: Double check validity of this
-        self.Imax = math.log(2, Imax/Imin) # Maximum length of interval
+        self.Imax = Imax#math.log(2, Imax/Imin) # Maximum length of interval
 
         self.k = k # Redundancy k
 
@@ -161,17 +182,17 @@ class Node:
         return
 
     # Trickle step 1
-    def start_trickle_algorithm():
+    def start_trickle_algorithm(self, currentSimTime):
 
         # Set I to a value in the range of Imin, Imax
         # Usually on first iteration, I is set to Imin
         if self.I == -1:
             self.I = self.Imin
 
-        self.begin_new_interval()
+        self.begin_new_interval(currentSimTime)
 
     # Trickle step 2
-    def begin_new_interval():
+    def begin_new_interval(self, currentSimTime):
 
         # Reset counter to 0
         self.c = 0
@@ -179,43 +200,57 @@ class Node:
         # Set t to a random point in the interval [I/2, I)
         self.t = random.randint(self.I // 2, self.I) # randint picks values from lowerbound to upperbound - 1
 
-    def update_state(self, nodeF, state, time):
+        self.simCycleTime = currentSimTime # offset for the simulation time
 
-        # If this is a new state, update to the new state and transmit to other nodes
-        self.arrivalInfo.append({ 'node': nodeF,'time': time,'state': state })
+    def update_state(self, nodeF, state, time):
         
+        # If this is a new state, update to the new state and possibly transmit to other nodes
+        self.arrivalInfo.append({ 'node': nodeF, 'time': time, 'state': state })
+
         # Trickle step 3
         if self.state == state:
             self.c += 1 # if a "consistent" transmission is heard, increment the counter
+            print('Incremented counter for ' + str(self.nid) + ' To: ' + str(self.c))
             return
 
         # Trickle step 6
         elif self.state != state:    
-            
+
             # Update state
             self.state = state
+            self.hasToTransmit = True
+            self.earliestTimeToTransmit = time
 
             if self.I > self.Imin:
                 # Reset the trickle timer and start a new interval
-                self.reset_trickle_timer()
+                self.reset_trickle_timer(time)
+                print(str(self.nid) + 'reset time')
 
-            # TODO: This transmission will move places to when we hit the time t
-            self.transmit_state_to_neighbors(time)
-
-    # Trickle step 4 TODO: When do we actually transmit in our simulation (precomputed or real-time?)
+    # Trickle step 4
     def transmit_state_to_neighbors(self, previousTime):
+        
         for node in self.nodeList:
 
             # Calculate time for the next neighbor to update
             time = self.calculate_propagation_time(self.position, node.position)
-            print('TIME ' + self.nid + ' ' + node.nid + ' '+ str(time) + ' ' + str(self.distance_between_2_points(self.position, node.position)))
             # Because this is precomputed, add the last iterations time to this one
             time += previousTime
+            print('TIME ' + self.nid + ' ' + node.nid + ' '+ str(time) + ' ' + str(self.distance_between_2_points(self.position, node.position)))
+            
             node.update_state(self, self.state, time)
         return
 
+
+    def has_interval_expired(self, simTime):
+        if (self.I + self.simCycleTime) <= simTime:
+            self.handle_interval_expired(simTime)
+        return    
+
     # Trickle step 5
-    def handle_interval_expired():
+    def handle_interval_expired(self, simTime):
+
+            # Update simulation time
+            self.simCycleTime = simTime
 
             # The interval I has expired, double the interval
             self.I *= 2
@@ -224,9 +259,9 @@ class Node:
             if self.I > self.Imax:
                 self.I = self.Imax
 
-    def reset_trickle_timer():
+    def reset_trickle_timer(self, currentSimTime):
 
         self.I = self.Imin
-        self.begin_new_interval()
+        self.begin_new_interval(currentSimTime)
 
         

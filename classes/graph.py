@@ -26,12 +26,23 @@ class Graph:
         timer = Text(Point(max_total, max_total), 'Time : ' + str(self.simulationCurrentTime))
         timer.draw(self.window)
 
+        # Inject state change to node in graph
+        self.nodeList[3].update_state(self.nodeList[3], 1, 1)
+        print(str(self.nodeList[3].Imax))
+
         while self.simulationCurrentTime < self.simulationEndTime:
 
             updatesToProcess = {}
             for node in self.nodeList:
+                # Get list of node update
                 nodeUpdates = node.has_node_updated_at_time(self.simulationCurrentTime)
                 updatesToProcess[node.nid] = {'node': node, 'updates' : nodeUpdates}
+                
+                # Attempt to transmit to other nodes
+                node.does_node_need_to_transmit(self.simulationCurrentTime)
+                
+                # Has the interval I expired?
+                node.has_interval_expired(self.simulationCurrentTime)
 
             for struct in updatesToProcess.values():# Graphical update
                 if struct['updates'] != []:

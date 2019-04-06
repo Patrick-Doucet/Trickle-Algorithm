@@ -29,7 +29,8 @@ g.add_node(nJ)
 # Configure trickle params in nodes
 # Setting Imax, Imin and redundancy k
 for node in g.nodeList:
-    node.configure_trickle_parameters(1, 10, 3)
+    node.configure_trickle_parameters(10, 100, 3)
+    node.start_trickle_algorithm(0) # start trickle algorithm at time=0
 
 # Debugging
 for node in g.nodeList:
@@ -39,8 +40,6 @@ for node in g.nodeList:
     print('I AM ' + node.nid + ' AND I CAN REACH: [' + outputstring + ']')
 
 g.plot()
-
-nD.update_state(nD, 1, 1)
 
 #for node in g.nodeList:
 #    print('I AM ' + node.nid + ' AND MY STATE IS: ' + str(node.state) + ' --------------------------- ARRIVAL TIME OF: ' + str(node.arrivalPacket) + ' IS ' + str(node.arrivalTime))
