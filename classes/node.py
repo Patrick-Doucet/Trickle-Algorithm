@@ -66,11 +66,12 @@ class Node:
 
         self.arrivalInfo.sort(key=sortFun)
 
-        timestamp = self.arrivalInfo[0]['time'] #for now
-        stateAtTimestamp = self.arrivalInfo[0]['state']
-        nodeF = self.arrivalInfo[0]['node']
-        if time == timestamp:
-            updateList.append({ 'timestamp': timestamp, 'state': stateAtTimestamp, 'node' : nodeF})
+        for arrival in self.arrivalInfo:
+            timestamp = arrival['time']
+            stateAtTimestamp = arrival['state']
+            nodeF = arrival['node']
+            if time == timestamp:
+                updateList.append({ 'timestamp': timestamp, 'state': stateAtTimestamp, 'node' : nodeF})
 
         return updateList
 
