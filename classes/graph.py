@@ -14,7 +14,7 @@ class Graph:
         self.simulationCurrentTime = -1
 
     # Iterate through the simulation time to graphically show all node updates
-    def run_simulation(self):
+    def run_simulation(self, startingNode):
 
         if(self.simulationCurrentTime < self.simulationStartTime):
             self.simulationCurrentTime = self.simulationStartTime
@@ -27,8 +27,7 @@ class Graph:
         timer.draw(self.window)
 
         # Inject state change to node in graph
-        self.nodeList[3].queue_received_state(self.nodeList[3], 1, 1)
-        print(str(self.nodeList[3].Imax))
+        startingNode.queue_received_state(startingNode, 1, 1)
 
         while self.simulationCurrentTime < self.simulationEndTime:
 
@@ -61,9 +60,6 @@ class Graph:
                     text = Text(Point(node.position['x'] + 0*node.graph.radius, node.position['y']+ 0*node.graph.radius), node.nid)
                     text.draw(node.graph.window)
                     sleep(1)
-            #if updatesToProcess != []:
-                #print("AT TIME " + str(self.simulationCurrentTime) + " I RECEIVED THE UPDATES " + str(updatesToProcess))
-
 
             timer.undraw()
             self.window.update()

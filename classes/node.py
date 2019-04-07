@@ -89,8 +89,6 @@ class Node:
         # if the time is not t, do not transmit
         if time != (self.t + self.simCycleTime): return
 
-        print(str(self.nid) + ' ' + str(self.arrivalInfo))
-
         # clear current messages where time of message < simTime
         # This means all messages that should not have arrived yet, will not get preemptively deleted from the arrival list before they can be processed
         arrivalsToKeep = []
@@ -100,8 +98,9 @@ class Node:
         self.arrivalInfo = arrivalsToKeep
 
         print(str(time) + ' = ' + str(self.t) + ' + ' + str(self.simCycleTime))
-       
-        # if c is not lesser than k, do not transmit    
+        print('nid: ' + self.nid + ' c: ' + str(self.c) + ' k: ' + str(self.k))
+        
+        # if c is not lesser than k, do not transmit
         if self.c >= self.k: return
 
         # Else transmit
@@ -241,8 +240,6 @@ class Node:
             # Calculate time for the next neighbor to update
             time = self.calculate_propagation_time(self.position, node.position)
             # Because this is precomputed, add the last iterations time to this one
-            print('prevTime ' + str(previousTime))
-            print('propagation time ' + str(time))
             time += previousTime
             print('TIME ' + self.nid + ' ' + node.nid + ' '+ str(time) + ' ' + str(self.distance_between_2_points(self.position, node.position)))
             
