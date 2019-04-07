@@ -3,6 +3,10 @@ import classes.graph as graph
 import sys
 import numpy as np
 
+if len(sys.argv) < 4: 
+    print('Missing command line argument')
+    exit(1)
+
 # Initting test graph
 g = graph.Graph(False)
 
@@ -37,4 +41,21 @@ g.plot()
 
 g.window.getMouse() # pause before closing
 
-g.run_simulation(g.nodeList[0])
+startNode = sys.argv[3]
+
+startingNode = -1
+for node in g.nodeList:
+    if node.nid == startNode:
+        startingNode = node
+
+if startingNode == -1:
+    print('Could not find node: ' + startNode)
+    exit(1)
+
+g.run_simulation(startingNode)
+
+totalTransmission = 0
+for node in g.nodeList:
+    totalTransmission += len(node.totalMessagesReceived)
+
+print('Total transmissions in network: ' + str(totalTransmission))
