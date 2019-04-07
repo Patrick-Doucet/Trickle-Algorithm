@@ -16,13 +16,12 @@ class Node:
 
         # Default init parameters
         self.nodeList = []
+        self.totalMessagesReceived = []
         self.arrivalInfo = []
         self.state = -1
         self.isListening = True # FOR NOW IT WILL ALWAYS LISTEN
         self.packetSize = 10.
         self.simCycleTime = 0 # offset for simulation time, self.t is bound by [I/2, I], but the simulation time always increases
-        self.hasToTransmit = False
-        self.earliestTimeToTransmit = -1
 
         # Trickle parameters
         self.Imin = -1 # Minimum length of interval
@@ -78,18 +77,19 @@ class Node:
     # Trickle step 4
     def does_node_need_to_transmit(self, time):
 
-        if self.hasToTransmit == False: return
+        if len(self.arrivalInfo) == 0: return
 
-        if self.earliestTimeToTransmit > time: return # The node cannot transmit until it has received the update first
+        if self.arrivalInfo[0]['time'] > time: return # The node cannot transmit until it has received the update first
 
         # if the time is not t, do not transmit
         if time != (self.t + self.simCycleTime): return
+
+        # clear current messages
+        self.arrivalInfo = []
         print(str(time) + ' = ' + str(self.t) + ' + ' + str(self.simCycleTime))
+       
         # if c is not lesser than k, do not transmit    
         if self.c >= self.k: return
-
-        # if the node transmit he won't need to transmit again until he receives another update
-        self.hasToTransmit = False
 
         # Else transmit
         self.transmit_state_to_neighbors(time)
@@ -202,29 +202,32 @@ class Node:
 
         self.simCycleTime = currentSimTime # offset for the simulation time
 
-    def update_state(self, nodeF, state, time):
-        
+    def queue_received_state(self, nodeF, state, time):
         # If this is a new state, update to the new state and possibly transmit to other nodes
+        self.totalMessagesReceived.append({ 'node': nodeF, 'time': time, 'state': state })
         self.arrivalInfo.append({ 'node': nodeF, 'time': time, 'state': state })
 
-        # Trickle step 3
-        if self.state == state:
-            self.c += 1 # if a "consistent" transmission is heard, increment the counter
-            print('Incremented counter for ' + str(self.nid) + ' To: ' + str(self.c))
-            return
+    def update_state(self, time):
+        
+        for arrival in self.arrivalInfo:
+            if arrival['time'] == time:
 
-        # Trickle step 6
-        elif self.state != state:    
+                # Trickle step 3
+                if self.state == arrival['state']:
+                    self.c += 1 # if a "consistent" transmission is heard, increment the counter
+                    print('Incremented counter for ' + str(self.nid) + ' To: ' + str(self.c))
+                    return
 
-            # Update state
-            self.state = state
-            self.hasToTransmit = True
-            self.earliestTimeToTransmit = time
+                # Trickle step 6
+                elif self.state != arrival['state']:    
 
-            if self.I > self.Imin:
-                # Reset the trickle timer and start a new interval
-                self.reset_trickle_timer(time)
-                print(str(self.nid) + 'reset time')
+                    # Update state
+                    self.state = arrival['state']
+
+                    if self.I > self.Imin:
+                        # Reset the trickle timer and start a new interval
+                        self.reset_trickle_timer(time)
+                        print(str(self.nid) + ' reset timer')
 
     # Trickle step 4
     def transmit_state_to_neighbors(self, previousTime):
@@ -237,7 +240,7 @@ class Node:
             time += previousTime
             print('TIME ' + self.nid + ' ' + node.nid + ' '+ str(time) + ' ' + str(self.distance_between_2_points(self.position, node.position)))
             
-            node.update_state(self, self.state, time)
+            node.queue_received_state(self, self.state, time)
         return
 
 

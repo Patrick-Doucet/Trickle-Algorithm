@@ -10,7 +10,7 @@ class Graph:
         # Default init parameters
         self.nodeList = []
         self.simulationStartTime = 0
-        self.simulationEndTime = 501
+        self.simulationEndTime = 2000
         self.simulationCurrentTime = -1
 
     # Iterate through the simulation time to graphically show all node updates
@@ -27,7 +27,7 @@ class Graph:
         timer.draw(self.window)
 
         # Inject state change to node in graph
-        self.nodeList[3].update_state(self.nodeList[3], 1, 1)
+        self.nodeList[3].queue_received_state(self.nodeList[3], 1, 1)
         print(str(self.nodeList[3].Imax))
 
         while self.simulationCurrentTime < self.simulationEndTime:
@@ -38,6 +38,9 @@ class Graph:
                 nodeUpdates = node.has_node_updated_at_time(self.simulationCurrentTime)
                 updatesToProcess[node.nid] = {'node': node, 'updates' : nodeUpdates}
                 
+                # Update node if needed
+                node.update_state(self.simulationCurrentTime)
+
                 # Attempt to transmit to other nodes
                 node.does_node_need_to_transmit(self.simulationCurrentTime)
                 
