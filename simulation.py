@@ -4,7 +4,7 @@ import sys
 import numpy as np
 
 # Initting test graph
-g = graph.Graph(True)
+g = graph.Graph(False)
 
 # Fetch filename from command line: Ex: python simulation.py <filename>
 paramsPath = sys.argv[1]
@@ -37,4 +37,4 @@ g.plot()
 
 g.window.getMouse() # pause before closing
 
-g.run_simulation(g.nodeList[2])
+g.run_simulation(g.nodeList[0])

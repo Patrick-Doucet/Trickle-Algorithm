@@ -59,7 +59,7 @@ class Graph:
                         self.draw_line(nodeF, node)
                     text = Text(Point(node.position['x'] + 0*node.graph.radius, node.position['y']+ 0*node.graph.radius), node.nid)
                     text.draw(node.graph.window)
-                    sleep(1)
+                    #sleep(0.25)
 
             timer.undraw()
             self.window.update()
