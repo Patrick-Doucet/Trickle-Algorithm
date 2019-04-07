@@ -19,7 +19,6 @@ class Node:
         self.totalMessagesReceived = []
         self.arrivalInfo = []
         self.state = -1
-        self.isListening = True # FOR NOW IT WILL ALWAYS LISTEN
         self.packetSize = 10.
         self.simCycleTime = 0 # offset for simulation time, self.t is bound by [I/2, I], but the simulation time always increases
 
@@ -79,14 +78,27 @@ class Node:
 
         if len(self.arrivalInfo) == 0: return
 
+        # Sort the arrival info to make sure we use the earliest transmission.
+        def sortFun(x):
+            return x['time']
+
+        self.arrivalInfo.sort(key=sortFun)
+
         if self.arrivalInfo[0]['time'] > time: return # The node cannot transmit until it has received the update first
 
         # if the time is not t, do not transmit
         if time != (self.t + self.simCycleTime): return
 
-        # clear current messages
-        # TODO: WE CANNOT CLEAR THIS HERE BECAUSE WE WILL LOSE TRANSMISSIONS
-        self.arrivalInfo = []
+        print(str(self.nid) + ' ' + str(self.arrivalInfo))
+
+        # clear current messages where time of message < simTime
+        # This means all messages that should not have arrived yet, will not get preemptively deleted from the arrival list before they can be processed
+        arrivalsToKeep = []
+        for arrival in self.arrivalInfo:
+            if arrival['time'] > time:
+                arrivalsToKeep.append(arrival)
+        self.arrivalInfo = arrivalsToKeep
+
         print(str(time) + ' = ' + str(self.t) + ' + ' + str(self.simCycleTime))
        
         # if c is not lesser than k, do not transmit    
@@ -110,7 +122,8 @@ class Node:
         alpha = 2
         noise = 1
 
-        transmissionRate = bandwidth * math.log(1 + (transmissionPower / (math.pow(distance, alpha) * noise)))
+        # Using the Shannon Theorem, See: https://en.wikipedia.org/wiki/Shannon%E2%80%93Hartley_theorem
+        transmissionRate = bandwidth * math.log2(1 + (transmissionPower / (math.pow(distance, alpha) * noise)))
         propagationTime = self.packetSize/transmissionRate
         # Normalize to integers
         normalizedPropagationTime = math.ceil(propagationTime)
@@ -168,19 +181,9 @@ class Node:
         """
 
         # TODO: Double check validity of this
-        self.Imax = Imax#math.log(2, Imax/Imin) # Maximum length of interval
+        self.Imax = Imax#math.log2(Imax/Imin) # Maximum length of interval
 
         self.k = k # Redundancy k
-
-    def start_listen(self):
-        # Listen period
-        self.isListening = True
-        return
-
-    def stop_listen(self):
-        # Stop listening
-        self.isListening = False
-        return
 
     # Trickle step 1
     def start_trickle_algorithm(self, currentSimTime):
@@ -238,6 +241,8 @@ class Node:
             # Calculate time for the next neighbor to update
             time = self.calculate_propagation_time(self.position, node.position)
             # Because this is precomputed, add the last iterations time to this one
+            print('prevTime ' + str(previousTime))
+            print('propagation time ' + str(time))
             time += previousTime
             print('TIME ' + self.nid + ' ' + node.nid + ' '+ str(time) + ' ' + str(self.distance_between_2_points(self.position, node.position)))
             
