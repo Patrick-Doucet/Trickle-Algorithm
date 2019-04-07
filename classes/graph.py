@@ -5,8 +5,8 @@ from time import sleep
 
 class Graph:
 
-    def __init__(self):
-
+    def __init__(self, show_range = False):
+        self.show_range = show_range
         # Default init parameters
         self.nodeList = []
         self.simulationStartTime = 0
@@ -37,13 +37,13 @@ class Graph:
                 # Get list of node update
                 nodeUpdates = node.has_node_updated_at_time(self.simulationCurrentTime)
                 updatesToProcess[node.nid] = {'node': node, 'updates' : nodeUpdates}
-                
+
                 # Update node if needed
                 node.update_state(self.simulationCurrentTime)
 
                 # Attempt to transmit to other nodes
                 node.does_node_need_to_transmit(self.simulationCurrentTime)
-                
+
                 # Has the interval I expired?
                 node.has_interval_expired(self.simulationCurrentTime)
 
@@ -107,9 +107,10 @@ class Graph:
             circle = Circle(Point(node.position['x'], node.position['y']),self.radius)
             #circle.setFill('black')
             circle.draw(self.window)
-            circle = Circle(Point(node.position['x'],node.position['y']), node.listenRange)
-            circle.setOutline('silver')
-            circle.draw(self.window)
+            if self.show_range:
+                circle = Circle(Point(node.position['x'],node.position['y']), node.listenRange)
+                circle.setOutline('silver')
+                circle.draw(self.window)
             for adj_node in node.get_node_list():
                 self.draw_line(node, adj_node, 'silver')
             text = Text(Point(node.position['x'] + 0*self.radius, node.position['y']+ 0*self.radius), node.nid)

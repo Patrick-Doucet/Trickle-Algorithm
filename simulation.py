@@ -1,21 +1,23 @@
 import classes.node as node
 import classes.graph as graph
 import sys
-
+import numpy as np
 
 # Initting test graph
 g = graph.Graph()
 
 # Fetch filename from command line: Ex: python simulation.py <filename>
-filename = sys.argv[1]
+paramsPath = sys.argv[1]
+graphPath = sys.argv[2]
 
-amountOfNodes = filename.readline()
-for x in range(0, amountOfNodes):
-    line = filename.readline()
-    words = line.split()
-    n = node.Node(g, words[0], {'x': words[1], 'y': words[2]}, words[3])
-    g.add_node(n)
-
+params = np.loadtxt(paramsPath)
+graph = np.loadtxt(graphPath, dtype='str')
+Imin, Imax, k = params
+for line in graph:
+    temp = node.Node(g, line[0], {'x': int(line[1]), 'y' : int(line[2])}, int(line[3]))
+    temp.configure_trickle_parameters(Imin,Imax,k)
+    g.add_node(temp)
+print([Imax,Imin,k])
 
 #nA = node.Node(g, 'A', {'x': 00, 'y': 30}, 20)
 #nB = node.Node(g, 'B', {'x': 10, 'y': 60}, 10)
