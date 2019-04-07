@@ -1,25 +1,39 @@
 import classes.node as node
 import classes.graph as graph
+import sys
+
 
 # Initting test graph
 g = graph.Graph()
-nA = node.Node(g, 'A', {'x': 00, 'y': 30}, 20)
-nB = node.Node(g, 'B', {'x': 10, 'y': 60}, 10)
-nC = node.Node(g, 'C', {'x': 20, 'y': 50}, 30)
-nD = node.Node(g, 'D', {'x': 50, 'y': 100}, 100)
-nE = node.Node(g, 'E', {'x': 00, 'y': 00}, 30)
-nF = node.Node(g, 'F', {'x': 30, 'y': 80}, 30)
-nG = node.Node(g, 'G', {'x': 40, 'y': 80}, 30)
-nH = node.Node(g, 'H', {'x': 30, 'y': 70}, 40)
-nI = node.Node(g, 'I', {'x': 20, 'y': 60}, 30)
-nJ = node.Node(g, 'J', {'x': 30, 'y': 50}, 30)
+
+# Fetch filename from command line: Ex: python simulation.py <filename>
+filename = sys.argv[1]
+
+amountOfNodes = filename.readline()
+for x in range(0, amountOfNodes):
+    line = filename.readline()
+    words = line.split()
+    n = node.Node(g, words[0], {'x': words[1], 'y': words[2]}, words[3])
+    g.add_node(n)
+
+
+#nA = node.Node(g, 'A', {'x': 00, 'y': 30}, 20)
+#nB = node.Node(g, 'B', {'x': 10, 'y': 60}, 10)
+#nC = node.Node(g, 'C', {'x': 20, 'y': 50}, 30)
+#nD = node.Node(g, 'D', {'x': 50, 'y': 100}, 100)
+#nE = node.Node(g, 'E', {'x': 00, 'y': 00}, 30)
+#nF = node.Node(g, 'F', {'x': 30, 'y': 80}, 30)
+#nG = node.Node(g, 'G', {'x': 40, 'y': 80}, 30)
+#nH = node.Node(g, 'H', {'x': 30, 'y': 70}, 40)
+#nI = node.Node(g, 'I', {'x': 20, 'y': 60}, 30)
+#nJ = node.Node(g, 'J', {'x': 30, 'y': 50}, 30)
 
 # Adding nodes to graph
-g.add_node(nA)
-g.add_node(nB)
-g.add_node(nC)
-g.add_node(nD)
-g.add_node(nE)
+#g.add_node(nA)
+#g.add_node(nB)
+#g.add_node(nC)
+#g.add_node(nD)
+#g.add_node(nE)
 #g.add_node(nF)
 #g.add_node(nG)
 #g.add_node(nH)
