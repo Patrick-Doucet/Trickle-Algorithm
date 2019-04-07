@@ -21,6 +21,7 @@ class Node:
         self.state = -1
         self.packetSize = 10.
         self.simCycleTime = 0 # offset for simulation time, self.t is bound by [I/2, I], but the simulation time always increases
+        self.hasUpdated = False
 
         # Trickle parameters
         self.Imin = -1 # Minimum length of interval
@@ -99,6 +100,13 @@ class Node:
 
         print(str(time) + ' = ' + str(self.t) + ' + ' + str(self.simCycleTime))
         print('nid: ' + self.nid + ' c: ' + str(self.c) + ' k: ' + str(self.k))
+        
+
+        # Does the node has a possible update to do?
+        if self.hasUpdated == False: return
+
+        # We process the update
+        self.hasUpdated = False
         
         # if c is not lesser than k, do not transmit
         if self.c >= self.k: return
@@ -219,7 +227,6 @@ class Node:
                 if self.state == arrival['state']:
                     self.c += 1 # if a "consistent" transmission is heard, increment the counter
                     print('Incremented counter for ' + str(self.nid) + ' To: ' + str(self.c))
-                    return
 
                 # Trickle step 6
                 elif self.state != arrival['state']:    
@@ -231,6 +238,9 @@ class Node:
                         # Reset the trickle timer and start a new interval
                         self.reset_trickle_timer(time)
                         print(str(self.nid) + ' reset timer')
+
+                    self.hasUpdated = True
+            return
 
     # Trickle step 4
     def transmit_state_to_neighbors(self, previousTime):
