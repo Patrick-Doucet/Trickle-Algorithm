@@ -85,6 +85,7 @@ class Node:
         if time != (self.t + self.simCycleTime): return
 
         # clear current messages
+        # TODO: WE CANNOT CLEAR THIS HERE BECAUSE WE WILL LOSE TRANSMISSIONS
         self.arrivalInfo = []
         print(str(time) + ' = ' + str(self.t) + ' + ' + str(self.simCycleTime))
        
