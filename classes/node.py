@@ -102,14 +102,14 @@ class Node:
 
         print(str(time) + ' = ' + str(self.t) + ' + ' + str(self.simCycleTime))
         print('nid: ' + self.nid + ' c: ' + str(amountOfArrivals - len(self.arrivalInfo) - 1) + ' k: ' + str(self.k))
-        
+
 
         # Does the node has a possible update to do?
         if self.hasUpdated == False: return
 
         # We process the update
         self.hasUpdated = False
-        
+
         # if c is not lesser than k, do not transmit
         if amountOfArrivals - len(self.arrivalInfo) - 1 >= self.k: return
 
@@ -142,7 +142,7 @@ class Node:
     ##########################################################
     #                    Trickle methods                     #
     ##########################################################
-    
+
     """
             The Trickle algorithm has six rules:
 
@@ -221,7 +221,7 @@ class Node:
         self.arrivalInfo.append({ 'node': nodeF, 'time': time, 'state': state })
 
     def update_state(self, time):
-        
+
         for arrival in self.arrivalInfo:
             if arrival['time'] == time:
 
@@ -231,7 +231,7 @@ class Node:
                     print('Incremented counter for ' + str(self.nid) + ' To: ' + str(self.c))
 
                 # Trickle step 6
-                elif self.state != arrival['state']:    
+                elif self.state != arrival['state']:
 
                     # Update state
                     self.state = arrival['state']
@@ -246,7 +246,7 @@ class Node:
 
     # Trickle step 4
     def transmit_state_to_neighbors(self, previousTime):
-        
+
         for node in self.nodeList:
 
             # Calculate time for the next neighbor to update
@@ -254,7 +254,8 @@ class Node:
             # Because this is precomputed, add the last iterations time to this one
             time += previousTime
             print('TIME ' + self.nid + ' ' + node.nid + ' '+ str(time) + ' ' + str(self.distance_between_2_points(self.position, node.position)))
-            
+            if node!=self:
+                self.graph.draw_line(self, node)
             node.queue_received_state(self, self.state, time)
         return
 
@@ -262,7 +263,7 @@ class Node:
     def has_interval_expired(self, simTime):
         if (self.I + self.simCycleTime) <= simTime:
             self.handle_interval_expired(simTime)
-        return    
+        return
 
     # Trickle step 5
     def handle_interval_expired(self, simTime):
@@ -281,5 +282,3 @@ class Node:
 
         self.I = self.Imin
         self.begin_new_interval(currentSimTime)
-
-        
