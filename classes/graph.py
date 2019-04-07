@@ -52,8 +52,8 @@ class Graph:
                     nodeF = struct['updates'][0]['node']
                     arc = Arc(Point(node.position['x'], node.position['y']),node.graph.radius,)
                     arc.setFill('medium sea green')
-                    arc.setStart('90')
-                    arc.setExtent('180')
+                    arc.setStart('0')
+                    arc.setExtent('359')
                     arc.draw(node.graph.window)
                     if node!=nodeF:
                         self.draw_line(nodeF, node)

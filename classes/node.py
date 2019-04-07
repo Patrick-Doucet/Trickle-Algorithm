@@ -92,6 +92,8 @@ class Node:
 
         # clear current messages where time of message < simTime
         # This means all messages that should not have arrived yet, will not get preemptively deleted from the arrival list before they can be processed
+        listCopy = self.arrivalInfo.copy()
+        amountOfArrivals = len(listCopy)
         arrivalsToKeep = []
         for arrival in self.arrivalInfo:
             if arrival['time'] > time:
@@ -99,7 +101,7 @@ class Node:
         self.arrivalInfo = arrivalsToKeep
 
         print(str(time) + ' = ' + str(self.t) + ' + ' + str(self.simCycleTime))
-        print('nid: ' + self.nid + ' c: ' + str(self.c) + ' k: ' + str(self.k))
+        print('nid: ' + self.nid + ' c: ' + str(amountOfArrivals - len(self.arrivalInfo) - 1) + ' k: ' + str(self.k))
         
 
         # Does the node has a possible update to do?
@@ -109,7 +111,7 @@ class Node:
         self.hasUpdated = False
         
         # if c is not lesser than k, do not transmit
-        if self.c >= self.k: return
+        if amountOfArrivals - len(self.arrivalInfo) - 1 >= self.k: return
 
         # Else transmit
         self.transmit_state_to_neighbors(time)
