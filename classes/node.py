@@ -145,6 +145,8 @@ class Node:
     ##########################################################
 
     """
+    Taken from: https://tools.ietf.org/html/rfc6206#section-4
+
             The Trickle algorithm has six rules:
 
     1.  When the algorithm starts execution, it sets I to a value in the
@@ -190,8 +192,7 @@ class Node:
             109 minutes.
         """
 
-        # TODO: Double check validity of this
-        self.Imax = Imax#math.log2(Imax/Imin) # Maximum length of interval
+        self.Imax = self.Imin * pow(2, Imax) # Maximum length of interval
 
         self.k = k # Redundancy k
 

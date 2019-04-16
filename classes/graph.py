@@ -50,11 +50,9 @@ class Graph:
                 if struct['updates'] != []:
                     node = struct['node']
                     nodeF = struct['updates'][0]['node']
-                    arc = Arc(Point(node.position['x'], node.position['y']),node.graph.radius,)
-                    arc.setFill('medium sea green')
-                    arc.setStart('0')
-                    arc.setExtent('359')
-                    arc.draw(node.graph.window)
+                    circle = Circle(Point(node.position['x'], node.position['y']),node.graph.radius,)
+                    circle.setFill('medium sea green')
+                    circle.draw(node.graph.window)
                     if node!=nodeF:
                         self.draw_line(nodeF, node)
                     text = Text(Point(node.position['x'] + 0*node.graph.radius, node.position['y']+ 0*node.graph.radius), node.nid)
