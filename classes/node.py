@@ -105,7 +105,7 @@ class Node:
         print('nid: ' + self.nid + ' c: ' + str(amountOfArrivals - len(self.arrivalInfo) - 1) + ' k: ' + str(self.k))
 
 
-        # Does the node has a possible update to do?
+        # Does the node have a possible update to do?
         if self.hasUpdated == False: return
 
         # We process the update
@@ -199,7 +199,7 @@ class Node:
     # Trickle step 1
     def start_trickle_algorithm(self, currentSimTime):
 
-        # Set I to a value in the range of Imin, Imax
+        # Set I to a value in the range of Imin, Imin * pow(2, Imax)
         # Usually on first iteration, I is set to Imin
         if self.I == -1:
             self.I = self.Imin
