@@ -229,6 +229,7 @@ class GraphWin(tk.Canvas):
         self._mouseCallback = None
         self.trans = None
         self.closed = False
+        self.var = 0
         master.lift()
         self.lastKey = ""
         if autoflush: _root.update()
@@ -285,6 +286,14 @@ class GraphWin(tk.Canvas):
         if self.autoflush:
             _root.update()
 
+    def cb(self):
+        print("variable is", self.var)
+
+    def Button(self, strr, fun):
+        c = tk.Checkbutton(
+        self.master, text=strr,
+        command=fun)
+        c.pack()
 
     def plot(self, x, y, color="black"):
         """Set pixel (x,y) to the given color"""
@@ -396,6 +405,11 @@ class GraphWin(tk.Canvas):
         for item in self.items[:]:
             item.undraw()
             item.draw(self)
+        self.update()
+
+    def clear(self):
+        for item in self.items[:]:
+            item.undraw()
         self.update()
 
 
@@ -621,7 +635,8 @@ class Rectangle(_BBox):
         p2 = self.p2
         x1,y1 = canvas.toScreen(p1.x,p1.y)
         x2,y2 = canvas.toScreen(p2.x,p2.y)
-        return canvas.create_rectangle(x1,y1,x2,y2,options)
+        sub_options = {x:options[x] for x in options.keys() if x!='start' and x!='extent'}
+        return canvas.create_rectangle(x1,y1,x2,y2,sub_options)
 
     def clone(self):
         other = Rectangle(self.p1, self.p2)
